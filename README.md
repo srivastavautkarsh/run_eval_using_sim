@@ -85,3 +85,6 @@ The "bad" output has four injected failures: a hallucinated evidence quote, a do
 - ZAP riskcode is the **initial** risk rating. A real ISSO still confirms or adjusts it before POA&M submission.
 - The control mapping is a suggestion for reviewer confirmation, not an assessment.
 - Next steps: dedupe findings against the previous month's POA&M (a Sim Table), open Jira tickets per row, and schedule the workflow to run after each monthly scan.
+
+
+#Output screenshots in the root
