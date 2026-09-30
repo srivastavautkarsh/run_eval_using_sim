@@ -1,0 +1,69 @@
+{
+  "@programName": "ZAP",
+  "@version": "2.15.0",
+  "@generated": "Mon, 28 Sep 2026 14:02:11",
+  "site": [
+    {
+      "@name": "https://portal.demo-agency.example.com",
+      "alerts": [
+        {
+          "pluginid": "40018", "name": "SQL Injection", "riskcode": "3", "confidence": "1",
+          "desc": "<p>SQL injection may be possible.</p>",
+          "instances": [
+            { "uri": "https://portal.demo-agency.example.com/static/css/site.css?v=2", "method": "GET", "param": "v",
+              "attack": "2 AND 1=1 -- ", "evidence": "",
+              "otherinfo": "The page results were successfully manipulated using the boolean conditions [2 AND 1=1 -- ] and [2 AND 1=2 -- ]. Response length differed by 3 bytes." }
+          ],
+          "count": "1", "solution": "<p>Use prepared statements / parameterized queries.</p>", "cweid": "89", "wascid": "19"
+        },
+        {
+          "pluginid": "40012", "name": "Cross Site Scripting (Reflected)", "riskcode": "3", "confidence": "2",
+          "desc": "<p>Cross-site Scripting (XSS) is an attack technique that involves echoing attacker-supplied code into a user's browser instance.</p>",
+          "instances": [
+            { "uri": "https://portal.demo-agency.example.com/search?q=%3Cscript%3Ealert%281%29%3C%2Fscript%3E", "method": "GET", "param": "q",
+              "attack": "<script>alert(1)</script>", "evidence": "<script>alert(1)</script>", "otherinfo": "" },
+            { "uri": "https://portal.demo-agency.example.com/help?topic=%3Cscript%3Ealert%281%29%3C%2Fscript%3E", "method": "GET", "param": "topic",
+              "attack": "<script>alert(1)</script>", "evidence": "<script>alert(1)</script>", "otherinfo": "" }
+          ],
+          "count": "2", "solution": "<p>Validate all input and encode output based on context.</p>", "cweid": "79", "wascid": "8"
+        },
+        {
+          "pluginid": "10038", "name": "Content Security Policy (CSP) Header Not Set", "riskcode": "2", "confidence": "3",
+          "desc": "<p>Content Security Policy (CSP) is an added layer of security that helps to detect and mitigate certain types of attacks.</p>",
+          "instances": [ { "uri": "https://portal.demo-agency.example.com/", "method": "GET", "param": "", "attack": "", "evidence": "", "otherinfo": "" } ],
+          "count": "14", "solution": "<p>Configure the web server to return the Content-Security-Policy header.</p>", "cweid": "693", "wascid": "15"
+        },
+        {
+          "pluginid": "10020", "name": "Missing Anti-clickjacking Header", "riskcode": "2", "confidence": "2",
+          "desc": "<p>The response does not protect against 'ClickJacking' attacks.</p>",
+          "instances": [ { "uri": "https://portal.demo-agency.example.com/login", "method": "GET", "param": "x-frame-options", "attack": "", "evidence": "", "otherinfo": "" } ],
+          "count": "6", "solution": "<p>Set Content-Security-Policy frame-ancestors or X-Frame-Options.</p>", "cweid": "1021", "wascid": "15"
+        },
+        {
+          "pluginid": "10003", "name": "Vulnerable JS Library", "riskcode": "2", "confidence": "2",
+          "desc": "<p>The identified library appears to be vulnerable.</p>",
+          "instances": [ { "uri": "https://portal.demo-agency.example.com/static/js/jquery-1.12.4.min.js", "method": "GET", "param": "", "attack": "", "evidence": "/*! jQuery v1.12.4", "otherinfo": "" } ],
+          "count": "1", "solution": "<p>Upgrade to the latest version of the affected library.</p>", "cweid": "1395", "wascid": "-1"
+        },
+        {
+          "pluginid": "10011", "name": "Cookie Without Secure Flag", "riskcode": "1", "confidence": "2",
+          "desc": "<p>A cookie has been set without the secure flag.</p>",
+          "instances": [ { "uri": "https://portal.demo-agency.example.com/login", "method": "POST", "param": "session_id", "attack": "", "evidence": "Set-Cookie: session_id", "otherinfo": "" } ],
+          "count": "1", "solution": "<p>Set the secure flag on cookies containing sensitive information.</p>", "cweid": "614", "wascid": "13"
+        },
+        {
+          "pluginid": "10036", "name": "Server Leaks Version Information via \"Server\" HTTP Response Header Field", "riskcode": "1", "confidence": "3",
+          "desc": "<p>The web server is leaking version information via the Server response header.</p>",
+          "instances": [ { "uri": "https://portal.demo-agency.example.com/", "method": "GET", "param": "", "attack": "", "evidence": "nginx/1.18.0", "otherinfo": "" } ],
+          "count": "20", "solution": "<p>Suppress the Server header or remove version details.</p>", "cweid": "200", "wascid": "13"
+        },
+        {
+          "pluginid": "10027", "name": "Information Disclosure - Suspicious Comments", "riskcode": "0", "confidence": "1",
+          "desc": "<p>The response appears to contain suspicious comments.</p>",
+          "instances": [ { "uri": "https://portal.demo-agency.example.com/static/js/app.js", "method": "GET", "param": "", "attack": "", "evidence": "TODO", "otherinfo": "" } ],
+          "count": "3", "solution": "<p>Remove comments that return information that may help an attacker.</p>", "cweid": "200", "wascid": "13"
+        }
+      ]
+    }
+  ]
+}

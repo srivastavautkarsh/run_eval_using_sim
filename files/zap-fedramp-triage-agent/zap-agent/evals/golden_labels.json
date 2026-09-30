@@ -1,0 +1,24 @@
+{
+  "_note": "Hand-labeled expectations. Risk and due dates are deterministic; controls allow any reasonable fit; is_false_positive marks alerts a human analyst would reject.",
+  "case_demo.json": {
+    "scan_date": "2026-09-28",
+    "alerts": {
+      "ZAP-40018-S1": {"risk": "High",          "controls": ["SI-10"],          "is_false_positive": true},
+      "ZAP-40012-S1": {"risk": "High",          "controls": ["SI-10"],          "is_false_positive": false},
+      "ZAP-10038-S1": {"risk": "Moderate",      "controls": ["CM-6", "SI-10"],  "is_false_positive": false},
+      "ZAP-10020-S1": {"risk": "Moderate",      "controls": ["CM-6", "SC-23"],  "is_false_positive": false},
+      "ZAP-10003-S1": {"risk": "Moderate",      "controls": ["SI-2", "RA-5"],   "is_false_positive": false},
+      "ZAP-10011-S1": {"risk": "Low",           "controls": ["SC-8", "SC-23"],  "is_false_positive": false},
+      "ZAP-10036-S1": {"risk": "Low",           "controls": ["CM-7", "CM-6"],   "is_false_positive": false},
+      "ZAP-10027-S1": {"risk": "Informational", "controls": ["CM-7", "SI-11"],  "is_false_positive": false}
+    }
+  },
+  "case_small.json": {
+    "scan_date": "2026-09-29",
+    "alerts": {
+      "ZAP-10035-S1": {"risk": "Low",      "controls": ["SC-8", "CM-6"],  "is_false_positive": false},
+      "ZAP-90022-S1": {"risk": "Moderate", "controls": ["SI-11"],         "is_false_positive": false},
+      "ZAP-10202-S1": {"risk": "Moderate", "controls": ["SC-23", "SI-10"],"is_false_positive": true}
+    }
+  }
+}

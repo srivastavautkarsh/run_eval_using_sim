@@ -1,0 +1,2 @@
+$env:SIM_API_KEY = "paste-your-key-here"
+$env:SIM_WORKFLOW_ID = "164b0936-d694-4146-892b-10d43106fe2f"

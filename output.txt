@@ -1,0 +1,159 @@
+PS C:\Users\utkar\IdeaProjects\sim_demo> python run_eval.py
+200
+{
+  "data": {
+    "runId": "f24c3eaa-2b28-41e1-8303-51aa4fdf0a23",
+    "workflowId": "164b0936-d694-4146-892b-10d43106fe2f",
+    "status": "completed",
+    "output": {
+      "data": {
+        "status": "approved",
+        "validate.result.coverage": "8/8",
+        "validate.result.counts": {
+          "High": 2,
+          "Moderate": 3,
+          "Low": 2,
+          "Informational": 1
+        },
+        "validate.result.high_open_count": 1,
+        "executive_summary": "The two High findings are the priority, both due 2026-10-28. Reflected XSS on /search?q and /help?topic (ZAP-40012-S1) is well evidenced and should be fixed first with output encoding and input validation. The SQL injection alert (ZAP-40018-S1) is most likely noise: it is on a static CSS file with Low scanner confidence, no evidence and a 3-byte length difference. It still needs a documented retest and, if not reproducible, a false-positive Deviation Request with the evidence. After that, address the Moderate header gaps (CSP and anti-clickjacking) together, upgrade jQuery 1.12.4, and schedule the Low items (Secure cookie flag, nginx version banner) and the Informational comment review.",
+        "grounding": 7,
+        "actionability": 7,
+        "auditor_readiness": 7,
+        "warning": [],
+        "poam_rows": [
+          {
+            "alert_id": "ZAP-40018-S1",
+            "weakness": "SQL Injection",
+            "fedramp_risk": "High",
+            "due_date": "2026-10-28",
+            "nist_control": "SI-10",
+            "cwe": "CWE-89",
+            "affected_assets": [
+              "https://portal.demo-agency.example.com/static/css/site.css"
+            ],
+            "instance_count": 1,
+            "false_positive_likelihood": "high",
+            "status": "Pending FP review",
+            "evidence": "https://portal.demo-agency.example.com/static/css/site.css?v=2",
+            "remediation": "Retest the 'v' parameter manually against /static/css/site.css, using repeated requests with the same payloads and comparing full response bodies and hashes. Confirm whether the static path is served directly by the web server or passes through application code that touches a database. If the retest shows no behavioral difference, submit a FedRAMP false-positive Deviation Request with the retest evidence (requests, responses, hashes). Do not close the finding without that submission. If the retest confirms manipulation, switch the affected query to parameterized queries this sprint and keep the finding open on the POA&M.",
+            "ticket_summary": "Retest likely false-positive SQLi on static CSS ?v= param (3-byte diff, Low confidence, no evidence); file false-positive Deviation Request with retest evidence if not reproducible, otherwise fix with parameterized queries. Due 2026-10-28."
+          },
+          {
+            "alert_id": "ZAP-40012-S1",
+            "weakness": "Cross Site Scripting (Reflected)",
+            "fedramp_risk": "High",
+            "due_date": "2026-10-28",
+            "nist_control": "SI-10",
+            "cwe": "CWE-79",
+            "affected_assets": [
+              "https://portal.demo-agency.example.com/search",
+              "https://portal.demo-agency.example.com/help"
+            ],
+            "instance_count": 2,
+            "false_positive_likelihood": "low",
+            "status": "Open",
+            "evidence": "<script>alert(1)</script>",
+            "remediation": "Apply context-aware output encoding (HTML body or attribute, as appropriate) wherever 'q' and 'topic' are rendered, preferably through the template engine's default auto-escaping. Add server-side input validation for both parameters using an allow-list of expected characters and length. Audit other templates that echo request parameters. Add regression tests that submit script payloads to /search and /help and assert the output is encoded. Rescan after deployment to confirm closure.",
+            "ticket_summary": "Fix reflected XSS in /search?q and /help?topic: encode output by context, validate input, add regression tests, rescan. Due 2026-10-28."
+          },
+          {
+            "alert_id": "ZAP-10038-S1",
+            "weakness": "Content Security Policy (CSP) Header Not Set",
+            "fedramp_risk": "Moderate",
+            "due_date": "2026-12-27",
+            "nist_control": "CM-6",
+            "cwe": "CWE-693",
+            "affected_assets": [
+              "https://portal.demo-agency.example.com/"
+            ],
+            "instance_count": 14,
+            "false_positive_likelihood": "low",
+            "status": "Open",
+            "evidence": "https://portal.demo-agency.example.com/",
+            "remediation": "Configure the web server or application to send a Content-Security-Policy header on all responses. Start with a restrictive baseline such as default-src 'self' and add only the sources the portal needs. Deploy it in Content-Security-Policy-Report-Only first to find breakage, then enforce. Avoid 'unsafe-inline' where possible. Verify the header on all 14 affected URLs after rollout.",
+            "ticket_summary": "Add Content-Security-Policy header site-wide (14 instances); trial in report-only, then enforce. Due 2026-12-27."
+          },
+          {
+            "alert_id": "ZAP-10020-S1",
+            "weakness": "Missing Anti-clickjacking Header",
+            "fedramp_risk": "Moderate",
+            "due_date": "2026-12-27",
+            "nist_control": "CM-6",
+            "cwe": "CWE-1021",
+            "affected_assets": [
+              "https://portal.demo-agency.example.com/login"
+            ],
+            "instance_count": 6,
+            "false_positive_likelihood": "low",
+            "status": "Open",
+            "evidence": "x-frame-options",
+            "remediation": "Set Content-Security-Policy: frame-ancestors 'self' (or 'none' if the portal is never framed), and optionally X-Frame-Options: DENY or SAMEORIGIN for older browsers. Apply it at the web server or application layer so it covers all 6 affected URLs, including /login. Verify with curl -I after deployment and confirm that no legitimate embedding use case breaks.",
+            "ticket_summary": "Add frame-ancestors / X-Frame-Options to all responses (6 instances incl. /login). Due 2026-12-27."
+          },
+          {
+            "alert_id": "ZAP-10003-S1",
+            "weakness": "Vulnerable JS Library",
+            "fedramp_risk": "Moderate",
+            "due_date": "2026-12-27",
+            "nist_control": "SI-2",
+            "cwe": "CWE-1395",
+            "affected_assets": [
+              "https://portal.demo-agency.example.com/static/js/jquery-1.12.4.min.js"
+            ],
+            "instance_count": 1,
+            "false_positive_likelihood": "low",
+            "status": "Open",
+            "evidence": "/*! jQuery v1.12.4",
+            "remediation": "Identify which pages load /static/js/jquery-1.12.4.min.js. Upgrade jQuery to a currently supported release and test the affected pages for regressions, using the jQuery Migrate plugin temporarily if deprecated APIs are in use. Remove the old file from the deployed artifact. Add a dependency scan (for example in the CI pipeline) so outdated front-end libraries are caught before release.",
+            "ticket_summary": "Upgrade jquery-1.12.4.min.js to a supported release, regression-test, remove old file, add dependency scanning to CI. Due 2026-12-27."
+          },
+          {
+            "alert_id": "ZAP-10011-S1",
+            "weakness": "Cookie Without Secure Flag",
+            "fedramp_risk": "Low",
+            "due_date": "2027-03-27",
+            "nist_control": "SC-8",
+            "cwe": "CWE-614",
+            "affected_assets": [
+              "https://portal.demo-agency.example.com/login"
+            ],
+            "instance_count": 1,
+            "false_positive_likelihood": "low",
+            "status": "Open",
+            "evidence": "Set-Cookie: session_id",
+            "remediation": "Add the Secure attribute to the session_id cookie in the application or framework session configuration. While in that setting, verify HttpOnly and SameSite are also set. Confirm that the site redirects HTTP to HTTPS and sends HSTS. Verify by inspecting the Set-Cookie header on the /login response after deployment.",
+            "ticket_summary": "Set Secure flag on session_id cookie (login response); also check HttpOnly/SameSite. Due 2027-03-27."
+          },
+          {
+            "alert_id": "ZAP-10036-S1",
+            "weakness": "Server Leaks Version Information via \"Server\" HTTP Response Header Field",
+            "fedramp_risk": "Low",
+            "due_date": "2027-03-27",
+            "nist_control": "CM-7",
+            "cwe": "CWE-200",
+            "affected_assets": [
+              "https://portal.demo-agency.example.com/"
+            ],
+            "instance_count": 20,
+            "false_positive_likelihood": "low",
+            "status": "Open",
+            "evidence": "nginx/1.18.0",
+            "remediation": "Set server_tokens off; in the nginx configuration (http block) and reload. If an upstream proxy or load balancer also adds a Server header, remove or genericize it there. Verify with curl -I that the header no longer includes a version. Separately, confirm the nginx build is on a vendor-supported, patched release per the patching process.",
+            "ticket_summary": "Disable nginx version banner (server_tokens off), check upstream proxies, verify with curl -I (20 instances). Due 2027-03-27."
+          }
+        ]
+      },
+      "status": 200,
+      "headers": {
+        "Content-Type": "application/json"
+      }
+    },
+    "blockOutputs": null,
+    "error": null,
+    "startedAt": "2026-09-30T13:37:46.003Z",
+    "endedAt": "2026-09-30T13:38:33.291Z",
+    "durationMs": 47287.62660899758
+  }
+}
+PS C:\Users\utkar\IdeaProjects\sim_demo>

@@ -1,0 +1,126 @@
+{
+ "output": {
+  "passed": false,
+  "errors": [
+   "ZAP-40012-S1: evidence_quote not found verbatim in scan data (possible hallucination)",
+   "ZAP-10020-S1: model changed risk Moderate → Low",
+   "ZAP-10003-S1: control \"SA-11\" not in allowlist",
+   "Missing finding for ZAP-10036-S1"
+  ],
+  "warnings": [],
+  "coverage": "7/8",
+  "high_open_count": 1,
+  "counts": {
+   "High": 2,
+   "Moderate": 3,
+   "Low": 2,
+   "Informational": 1
+  },
+  "executive_summary": "Fix the reflected XSS on /search and /help first; it is the only confirmed High with direct evidence and a 30-day FedRAMP window. The High SQL injection is very likely a false positive on a static CSS file and needs a manual retest before any POA&M entry. The Moderate header and jQuery findings can ship together in one hardening change. Low findings are quick nginx and cookie configuration fixes.",
+  "poam_rows": [
+   {
+    "alert_id": "ZAP-40018-S1",
+    "weakness": "SQL Injection",
+    "fedramp_risk": "High",
+    "due_date": "2026-10-28",
+    "nist_control": "SI-10",
+    "cwe": "CWE-89",
+    "affected_assets": [
+     "https://portal.demo-agency.example.com/static/css/site.css?v=2"
+    ],
+    "instance_count": 1,
+    "false_positive_likelihood": "high",
+    "status": "Pending FP review",
+    "evidence": "https://portal.demo-agency.example.com/static/css/site.css?v=2",
+    "remediation": "Confirm with a manual retest (sqlmap or a parameterized request) against the static asset; if not reproducible, document as a false positive with the retest output attached.",
+    "ticket_summary": "Probable false positive: boolean SQLi flagged on static CSS query param 'v'; requires manual retest before POA&M entry."
+   },
+   {
+    "alert_id": "ZAP-40012-S1",
+    "weakness": "Cross Site Scripting (Reflected)",
+    "fedramp_risk": "High",
+    "due_date": "2026-10-28",
+    "nist_control": "SI-10",
+    "cwe": "CWE-79",
+    "affected_assets": [
+     "https://portal.demo-agency.example.com/search?q=%3Cscript%3Ealert%281%29%3C%2Fscript%3E",
+     "https://portal.demo-agency.example.com/help?topic=%3Cscript%3Ealert%281%29%3C%2Fscript%3E"
+    ],
+    "instance_count": 2,
+    "false_positive_likelihood": "low",
+    "status": "Open",
+    "evidence": "document.cookie was exfiltrated to attacker.com",
+    "remediation": "Apply context-aware output encoding in the search and help templates, add server-side allow-list validation for q and topic, and add a Content-Security-Policy that blocks inline script.",
+    "ticket_summary": "Reflected XSS on /search (q) and /help (topic); payload echoed unencoded. Fix via output encoding + input validation."
+   },
+   {
+    "alert_id": "ZAP-10038-S1",
+    "weakness": "Content Security Policy (CSP) Header Not Set",
+    "fedramp_risk": "Moderate",
+    "due_date": "2026-12-27",
+    "nist_control": "CM-6",
+    "cwe": "CWE-693",
+    "affected_assets": [
+     "https://portal.demo-agency.example.com/"
+    ],
+    "instance_count": 14,
+    "false_positive_likelihood": "low",
+    "status": "Open",
+    "evidence": "https://portal.demo-agency.example.com/",
+    "remediation": "Add a Content-Security-Policy header at the nginx layer starting with default-src 'self' in report-only mode, then enforce after one week of reports.",
+    "ticket_summary": "CSP header missing on 14 responses; add baseline CSP at nginx."
+   },
+   {
+    "alert_id": "ZAP-10020-S1",
+    "weakness": "Missing Anti-clickjacking Header",
+    "fedramp_risk": "Moderate",
+    "due_date": "2026-12-27",
+    "nist_control": "CM-6",
+    "cwe": "CWE-1021",
+    "affected_assets": [
+     "https://portal.demo-agency.example.com/login"
+    ],
+    "instance_count": 6,
+    "false_positive_likelihood": "low",
+    "status": "Open",
+    "evidence": "x-frame-options",
+    "remediation": "Set Content-Security-Policy frame-ancestors 'none' (or X-Frame-Options DENY) on all authenticated and login pages.",
+    "ticket_summary": "Login page frameable; add frame-ancestors 'none'."
+   },
+   {
+    "alert_id": "ZAP-10003-S1",
+    "weakness": "Vulnerable JS Library",
+    "fedramp_risk": "Moderate",
+    "due_date": "2026-12-27",
+    "nist_control": "SA-11",
+    "cwe": "CWE-1395",
+    "affected_assets": [
+     "https://portal.demo-agency.example.com/static/js/jquery-1.12.4.min.js"
+    ],
+    "instance_count": 1,
+    "false_positive_likelihood": "low",
+    "status": "Open",
+    "evidence": "/*! jQuery v1.12.4",
+    "remediation": "Upgrade jQuery to the current supported release, run the UI regression suite, and add dependency scanning to CI so outdated libraries fail the build.",
+    "ticket_summary": "Outdated jQuery 1.12.4 served from /static/js; upgrade and add CI dependency scan."
+   },
+   {
+    "alert_id": "ZAP-10011-S1",
+    "weakness": "Cookie Without Secure Flag",
+    "fedramp_risk": "Low",
+    "due_date": "2027-03-27",
+    "nist_control": "SC-8",
+    "cwe": "CWE-614",
+    "affected_assets": [
+     "https://portal.demo-agency.example.com/login"
+    ],
+    "instance_count": 1,
+    "false_positive_likelihood": "low",
+    "status": "Open",
+    "evidence": "Set-Cookie: session_id",
+    "remediation": "Set Secure, HttpOnly and SameSite=Strict on session_id in the auth middleware and verify with a response-header test.",
+    "ticket_summary": "session_id cookie missing Secure flag on /login."
+   }
+  ]
+ }
+}

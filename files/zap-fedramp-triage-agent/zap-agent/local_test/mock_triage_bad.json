@@ -1,0 +1,82 @@
+{
+ "findings": [
+  {
+   "alert_id": "ZAP-40018-S1",
+   "title": "SQL Injection",
+   "fedramp_risk": "High",
+   "nist_control": "SI-10",
+   "false_positive_likelihood": "high",
+   "evidence_quote": "https://portal.demo-agency.example.com/static/css/site.css?v=2",
+   "rationale": "Scanner confidence is Low, the target is a static CSS file with a cache-busting parameter, evidence is empty, and the only signal is a 3-byte response-length difference. A static asset does not query a database.",
+   "remediation": "Confirm with a manual retest (sqlmap or a parameterized request) against the static asset; if not reproducible, document as a false positive with the retest output attached.",
+   "ticket_summary": "Probable false positive: boolean SQLi flagged on static CSS query param 'v'; requires manual retest before POA&M entry."
+  },
+  {
+   "alert_id": "ZAP-40012-S1",
+   "title": "Cross Site Scripting (Reflected)",
+   "fedramp_risk": "High",
+   "nist_control": "SI-10",
+   "false_positive_likelihood": "low",
+   "evidence_quote": "document.cookie was exfiltrated to attacker.com",
+   "rationale": "The injected script payload is reflected verbatim in the response on two endpoints (/search param q, /help param topic), which is direct evidence of unencoded output.",
+   "remediation": "Apply context-aware output encoding in the search and help templates, add server-side allow-list validation for q and topic, and add a Content-Security-Policy that blocks inline script.",
+   "ticket_summary": "Reflected XSS on /search (q) and /help (topic); payload echoed unencoded. Fix via output encoding + input validation."
+  },
+  {
+   "alert_id": "ZAP-10038-S1",
+   "title": "Content Security Policy (CSP) Header Not Set",
+   "fedramp_risk": "Moderate",
+   "nist_control": "CM-6",
+   "false_positive_likelihood": "low",
+   "evidence_quote": "https://portal.demo-agency.example.com/",
+   "rationale": "The CSP header is absent across 14 responses; this is a configuration baseline gap that also increases XSS impact.",
+   "remediation": "Add a Content-Security-Policy header at the nginx layer starting with default-src 'self' in report-only mode, then enforce after one week of reports.",
+   "ticket_summary": "CSP header missing on 14 responses; add baseline CSP at nginx."
+  },
+  {
+   "alert_id": "ZAP-10020-S1",
+   "title": "Missing Anti-clickjacking Header",
+   "fedramp_risk": "Low",
+   "nist_control": "CM-6",
+   "false_positive_likelihood": "low",
+   "evidence_quote": "x-frame-options",
+   "rationale": "The login page does not set X-Frame-Options or a frame-ancestors directive, so it can be framed by another origin.",
+   "remediation": "Set Content-Security-Policy frame-ancestors 'none' (or X-Frame-Options DENY) on all authenticated and login pages.",
+   "ticket_summary": "Login page frameable; add frame-ancestors 'none'."
+  },
+  {
+   "alert_id": "ZAP-10003-S1",
+   "title": "Vulnerable JS Library",
+   "fedramp_risk": "Moderate",
+   "nist_control": "SA-11",
+   "false_positive_likelihood": "low",
+   "evidence_quote": "/*! jQuery v1.12.4",
+   "rationale": "The served file banner identifies jQuery 1.12.4, which the scanner flags as a vulnerable library version.",
+   "remediation": "Upgrade jQuery to the current supported release, run the UI regression suite, and add dependency scanning to CI so outdated libraries fail the build.",
+   "ticket_summary": "Outdated jQuery 1.12.4 served from /static/js; upgrade and add CI dependency scan."
+  },
+  {
+   "alert_id": "ZAP-10011-S1",
+   "title": "Cookie Without Secure Flag",
+   "fedramp_risk": "Low",
+   "nist_control": "SC-8",
+   "false_positive_likelihood": "low",
+   "evidence_quote": "Set-Cookie: session_id",
+   "rationale": "The session_id cookie set on POST /login lacks the Secure flag, so it could be sent over an unencrypted channel.",
+   "remediation": "Set Secure, HttpOnly and SameSite=Strict on session_id in the auth middleware and verify with a response-header test.",
+   "ticket_summary": "session_id cookie missing Secure flag on /login."
+  },
+  {
+   "alert_id": "ZAP-10027-S1",
+   "title": "Information Disclosure - Suspicious Comments",
+   "fedramp_risk": "Informational",
+   "nist_control": "CM-7",
+   "false_positive_likelihood": "medium",
+   "evidence_quote": "TODO",
+   "rationale": "A TODO comment was found in app.js; this is informational and usually harmless, but comments should be stripped from production bundles.",
+   "remediation": "Enable comment stripping in the production JavaScript build step and rebuild the bundle.",
+   "ticket_summary": "Informational: TODO comments in app.js bundle; strip in build."
+  }
+ ],
+ "executive_summary": "Fix the reflected XSS on /search and /help first; it is the only confirmed High with direct evidence and a 30-day FedRAMP window. The High SQL injection is very likely a false positive on a static CSS file and needs a manual retest before any POA&M entry. The Moderate header and jQuery findings can ship together in one hardening change. Low findings are quick nginx and cookie configuration fixes."
+}
