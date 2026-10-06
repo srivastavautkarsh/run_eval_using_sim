@@ -67,7 +67,9 @@ python evals/run_evals.py --runs 3     # live, 3 runs per case to measure varian
 | fp_recall | The labeled false positives were flagged "high" FP likelihood |
 | tp_not_dismissed | Real findings were **not** waved away as false positives, which is the costlier error |
 
-**Results:** *(fill in after running against your deployed workflow — model, date, mean of 3 runs)*
+**Results:** 
+<img width="3195" height="385" alt="image" src="https://github.com/user-attachments/assets/aeff642e-7e69-43b1-99e0-3399d0248fac" />
+
 
 ### Verified locally without an LLM
 
